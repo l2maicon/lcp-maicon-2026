@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LCP 2026 – Maicon Martins</title>
+<style>
+  :root {
+    --teal: #1a5c5a;
+    --teal-light: #2d8b87;
+    --green: #8ab87a;
+    --green-light: #b8d4a8;
+    --cream: #f7f5f0;
+    --dark: #1a1a1a;
+    --gray: #6b7280;
+    --border: #e5e7eb;
+    --white: #ffffff;
+    --orange: #e97c3e;
+    --blue: #3b82f6;
+    --red: #ef4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--cream); color: var(--dark); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--teal); box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    display: flex; align-items: center; gap: 0; overflow-x: auto;
+  }
+  nav .brand {
+    padding: 14px 20px; color: white; font-weight: 700; font-size: 15px;
+    white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.2);
+  }
+  nav a {
+    padding: 14px 16px; color: rgba(255,255,255,0.85); text-decoration: none;
+    font-size: 13px; font-weight: 500; white-space: nowrap;
+    transition: all .2s; border-bottom: 3px solid transparent;
+  }
+  nav a:hover, nav a.active { color: white; border-bottom-color: var(--green); background: rgba(255,255,255,0.08); }
+
+  /* HERO */
+  .hero {
+    margin-top: 52px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 60%, #3aada8 100%);
+    padding: 60px 24px 50px; text-align: center; color: white;
+  }
+  .hero .badge { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 4px 14px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+  .hero h1 { font-size: clamp(24px, 5vw, 40px); font-weight: 800; margin-bottom: 8px; }
+  .hero p { font-size: 16px; opacity: .85; margin-bottom: 32px; }
+  .hero-metrics { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .hero-card {
+    background: rgba(255,255,255,0.12); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 16px;
+    padding: 20px 28px; min-width: 160px; text-align: center;
+  }
+  .hero-card .num { font-size: 38px; font-weight: 800; color: var(--green-light); line-height: 1; }
+  .hero-card .label { font-size: 12px; opacity: .9; margin-top: 6px; line-height: 1.4; }
+  .hero-card .sub { font-size: 11px; opacity: .6; margin-top: 2px; }
+
+  /* SECTIONS */
+  section { padding: 56px 24px; max-width: 1000px; margin: 0 auto; }
+  .section-title { font-size: 22px; font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+  .section-sub { color: var(--gray); font-size: 14px; margin-bottom: 32px; }
+
+  /* INSIGHT BANNER */
+  .insight-banner {
+    background: linear-gradient(135deg, #fff9f0, #fff3e0);
+    border-left: 4px solid var(--orange); border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 32px;
+  }
+  .insight-banner strong { color: var(--orange); display: block; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .insight-banner p { font-size: 14px; color: #5c4a30; line-height: 1.6; }
+
+  /* SCORE CARDS */
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+  .score-card {
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid var(--border);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .score-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .score-card .card-label { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+  .score-card .bars { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-row .bar-label { font-size: 11px; color: var(--gray); width: 80px; flex-shrink: 0; }
+  .bar-track { flex: 1; background: #f0f0f0; border-radius: 8px; height: 10px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 8px; transition: width 1s ease; }
+  .bar-fill.self { background: var(--teal); }
+  .bar-fill.others { background: var(--green); }
+  .bar-pct { font-size: 12px; font-weight: 700; width: 36px; text-align: right; }
+  .score-card .card-icon { font-size: 28px; margin-bottom: 10px; }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .dot-self { background: var(--teal); }
+  .dot-others { background: var(--green); }
+
+  /* CREATIVE DIMENSIONS */
+  .dim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .dim-card {
+    background: white; border-radius: 14px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .dim-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--green);
+  }
+  .dim-card.highlight::before { background: var(--teal); }
+  .dim-card .dim-name { font-weight: 700; font-size: 15px; color: var(--teal); margin-bottom: 4px; }
+  .dim-card .dim-sub { font-size: 12px; color: var(--gray); margin-bottom: 14px; }
+  .star-badge {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--teal); color: white; border-radius: 20px;
+    padding: 2px 10px; font-size: 11px; font-weight: 700;
+  }
+
+  /* REACTIVE */
+  .reactive-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .reactive-card {
+    background: white; border-radius: 14px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .reactive-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+  }
+  .reactive-card.attention::before { background: #f59e0b; }
+  .reactive-card.ok::before { background: var(--green); }
+  .reactive-card .r-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .reactive-card.attention .r-name { color: #b45309; }
+  .reactive-card.ok .r-name { color: var(--teal); }
+  .reactive-card .r-tip { font-size: 12px; color: var(--gray); margin-top: 10px; font-style: italic; line-height: 1.5; }
+  .badge-alert { display: inline-block; background: #fef3c7; color: #92400e; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 600; }
+  .badge-ok { display: inline-block; background: #d1fae5; color: #065f46; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 600; }
+
+  /* DISCREPANCY */
+  .discrepancy-section { background: white; border-radius: 16px; padding: 28px; margin-top: 32px; border: 1px solid var(--border); }
+  .discrepancy-section h3 { font-size: 16px; font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+  .discrepancy-section p { font-size: 13px; color: var(--gray); margin-bottom: 20px; }
+  .disc-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+  .disc-row:last-child { border-bottom: none; }
+  .disc-name { font-size: 13px; font-weight: 600; width: 180px; flex-shrink: 0; }
+  .disc-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .disc-note { font-size: 11px; color: var(--gray); width: 140px; flex-shrink: 0; text-align: right; line-height: 1.4; }
+
+  /* FEEDBACK */
+  .feedback-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .feedback-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+  .feedback-card .fc-icon { font-size: 32px; margin-bottom: 12px; }
+  .feedback-card .fc-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .feedback-card.stop .fc-title { color: #dc2626; }
+  .feedback-card.start .fc-title { color: #2563eb; }
+  .feedback-card.continue .fc-title { color: #059669; }
+  .feedback-card .fc-sub { font-size: 12px; color: var(--gray); margin-bottom: 16px; }
+  .feedback-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .feedback-card ul li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; line-height: 1.5; }
+  .feedback-card ul li::before { flex-shrink: 0; margin-top: 2px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+  .stop li::before { content: '✕'; background: #fee2e2; color: #dc2626; }
+  .start li::before { content: '+'; background: #dbeafe; color: #2563eb; }
+  .continue li::before { content: '✓'; background: #d1fae5; color: #059669; }
+
+  /* BRAND */
+  .brand-section { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%); border-radius: 20px; padding: 36px; color: white; }
+  .brand-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .brand-section p { font-size: 13px; opacity: .8; margin-bottom: 24px; }
+  .brand-list { display: flex; flex-direction: column; gap: 10px; }
+  .brand-item { display: flex; align-items: center; gap: 12px; }
+  .brand-rank { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .brand-name { flex: 1; font-size: 14px; font-weight: 600; }
+  .brand-pct { font-size: 13px; font-weight: 700; color: var(--green-light); }
+  .brand-bar-track { width: 120px; background: rgba(255,255,255,0.15); border-radius: 8px; height: 6px; }
+  .brand-bar-fill { height: 100%; background: var(--green); border-radius: 8px; }
+
+  /* PLAN */
+  .plan-steps { display: flex; flex-direction: column; gap: 20px; }
+  .plan-step { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); display: flex; gap: 20px; align-items: flex-start; }
+  .plan-step .step-num { width: 44px; height: 44px; border-radius: 50%; background: var(--teal); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+  .plan-step .step-content h4 { font-size: 16px; font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+  .plan-step .step-content p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+  .plan-step .step-content ul { margin-top: 10px; padding-left: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .plan-step .step-content ul li { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+  /* DIVIDER */
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 0 24px; }
+
+  /* FOOTER */
+  footer { background: var(--teal); color: rgba(255,255,255,0.7); text-align: center; padding: 24px; font-size: 12px; }
+  footer strong { color: white; }
+
+  /* SCROLL INDICATOR */
+  .scroll-progress { position: fixed; top: 52px; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.1); z-index: 99; }
+  .scroll-progress-bar { height: 100%; background: var(--green); width: 0%; transition: width .1s; }
+
+  @media (max-width: 600px) {
+    .disc-note { display: none; }
+    .brand-bar-track { display: none; }
+    nav .brand { font-size: 13px; padding: 12px 14px; }
+    nav a { padding: 12px 10px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress"><div class="scroll-progress-bar" id="progressBar"></div></div>
+
+<nav id="mainNav">
+  <div class="brand">⬤ LCP 2026</div>
+  <a href="#visao-geral" class="active">Visão Geral</a>
+  <a href="#criativas">Competências</a>
+  <a href="#reativas">Reativas</a>
+  <a href="#feedbacks">Feedbacks</a>
+  <a href="#marca">Marca</a>
+  <a href="#plano">Plano Dev.</a>
+</nav>
+
+<div class="hero">
+  <div class="badge">Leadership Circle Profile™ · v1.1.1</div>
+  <h1>Maicon Martins</h1>
+  <p>Avaliação de Liderança · 26 de março de 2026 · 11 avaliadores</p>
+  <div class="hero-metrics">
+    <div class="hero-card">
+      <div class="num">85%</div>
+      <div class="label">Eficácia da Liderança</div>
+      <div class="sub">Avaliadores · Percentil</div>
+    </div>
+    <div class="hero-card">
+      <div class="num">83%</div>
+      <div class="label">Potencial de Liderança</div>
+      <div class="sub">Avaliadores · Percentil</div>
+    </div>
+    <div class="hero-card">
+      <div class="num">79%</div>
+      <div class="label">Equilíbrio Relac.–Tarefa</div>
+      <div class="sub">Avaliadores · Percentil</div>
+    </div>
+    <div class="hero-card">
+      <div class="num">78%</div>
+      <div class="label">Escala Reativo-Criativa</div>
+      <div class="sub">Avaliadores · Percentil</div>
+    </div>
+  </div>
+</div>
+
+<!-- VISÃO GERAL -->
+<section id="visao-geral">
+  <div class="section-title">📊 Visão Geral dos Resultados</div>
+  <div class="section-sub">Como você se avalia vs. como seus 11 avaliadores te veem — em percentil global</div>
+
+  <div class="insight-banner">
+    <strong>💡 Insight Principal</strong>
+    <p>Existe uma <strong>diferença significativa</strong> entre a autoavaliação e a avaliação dos outros. Você tende a ser <strong>mais crítico consigo mesmo</strong> do que seus avaliadores. Na Eficácia da Liderança, enquanto você se avalia no percentil 81, seus avaliadores te colocam no percentil <strong>85</strong> — acima de 85% dos líderes globais.</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-self"></div> Autoavaliação</div>
+    <div class="legend-item"><div class="legend-dot dot-others"></div> Avaliadores</div>
+  </div>
+
+  <div class="score-grid">
+    <div class="score-card">
+      <div class="card-icon">⚡</div>
+      <div class="card-label">Eficácia da Liderança</div>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">Autoaval.</span>
+          <div class="bar-track"><div class="bar-fill self" style="width:81%"></div></div>
+          <span class="bar-pct" style="color:var(--teal)">81%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Avaliadores</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:85%"></div></div>
+          <span class="bar-pct" style="color:var(--green)">85%</span>
+        </div>
+      </div>
+    </div>
+    <div class="score-card">
+      <div class="card-icon">🎯</div>
+      <div class="card-label">Potencial de Liderança</div>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">Autoaval.</span>
+          <div class="bar-track"><div class="bar-fill self" style="width:43%"></div></div>
+          <span class="bar-pct" style="color:var(--teal)">43%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Avaliadores</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:83%"></div></div>
+          <span class="bar-pct" style="color:var(--green)">83%</span>
+        </div>
+      </div>
+    </div>
+    <div class="score-card">
+      <div class="card-icon">⚖️</div>
+      <div class="card-label">Equilíbrio Relac.–Tarefa</div>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">Autoaval.</span>
+          <div class="bar-track"><div class="bar-fill self" style="width:45%"></div></div>
+          <span class="bar-pct" style="color:var(--teal)">45%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Avaliadores</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:79%"></div></div>
+          <span class="bar-pct" style="color:var(--green)">79%</span>
+        </div>
+      </div>
+    </div>
+    <div class="score-card">
+      <div class="card-icon">🌱</div>
+      <div class="card-label">Escala Reativo-Criativa</div>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">Autoaval.</span>
+          <div class="bar-track"><div class="bar-fill self" style="width:42%"></div></div>
+          <span class="bar-pct" style="color:var(--teal)">42%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Avaliadores</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:78%"></div></div>
+          <span class="bar-pct" style="color:var(--green)">78%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- COMPETÊNCIAS CRIATIVAS -->
+<section id="criativas">
+  <div class="section-title">🌟 Competências Criativas — Seus Pontos Fortes</div>
+  <div class="section-sub">Dimensões que contribuem para sua eficácia como líder (acima de 67% = alto)</div>
+
+  <div class="legend" style="margin-bottom:24px">
+    <div class="legend-item"><div class="legend-dot dot-self"></div> Autoavaliação</div>
+    <div class="legend-item"><div class="legend-dot dot-others"></div> Avaliadores</div>
+  </div>
+
+  <div class="dim-grid">
+
+    <div class="dim-card highlight">
+      <div class="star-badge">⭐ Top 1</div>
+      <div class="dim-name">Capacidade de Decisão</div>
+      <div class="dim-sub">Toma decisões difíceis com agilidade e eficiência</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:71%"></div></div><span class="bar-pct" style="color:var(--teal)">71%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:89%"></div></div><span class="bar-pct" style="color:var(--green)">89%</span></div>
+      </div>
+    </div>
+
+    <div class="dim-card highlight">
+      <div class="star-badge">⭐ Top 2</div>
+      <div class="dim-name">Orientação e Desenvolvimento</div>
+      <div class="dim-sub">Desenvolve pessoas, dá feedback de crescimento</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:78%"></div></div><span class="bar-pct" style="color:var(--teal)">78%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:85%"></div></div><span class="bar-pct" style="color:var(--green)">85%</span></div>
+      </div>
+    </div>
+
+    <div class="dim-card highlight">
+      <div class="star-badge">⭐ Top 3</div>
+      <div class="dim-name">Pensamento Sistêmico</div>
+      <div class="dim-sub">Redesenha sistemas, melhora processos organizacionais</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:60%"></div></div><span class="bar-pct" style="color:var(--teal)">60%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:84%"></div></div><span class="bar-pct" style="color:var(--green)">84%</span></div>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-name">Compostura</div>
+      <div class="dim-sub">Calmo sob pressão, influência tranquilizadora</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:27%"></div></div><span class="bar-pct" style="color:var(--teal)">27%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:79%"></div></div><span class="bar-pct" style="color:var(--green)">79%</span></div>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-name">Autenticidade Corajosa</div>
+      <div class="dim-sub">Fala direto mesmo em questões controversas</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:82%"></div></div><span class="bar-pct" style="color:var(--teal)">82%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:77%"></div></div><span class="bar-pct" style="color:var(--green)">77%</span></div>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-name">Foco Estratégico</div>
+      <div class="dim-sub">Compreensão sólida do mercado e direção estratégica</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:50%"></div></div><span class="bar-pct" style="color:var(--teal)">50%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:77%"></div></div><span class="bar-pct" style="color:var(--green)">77%</span></div>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-name">Autenticidade (geral)</div>
+      <div class="dim-sub">Integridade, valores consistentes, conduta alinhada</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:66%"></div></div><span class="bar-pct" style="color:var(--teal)">66%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:77%"></div></div><span class="bar-pct" style="color:var(--green)">77%</span></div>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-name">Inteligência Interpessoal</div>
+      <div class="dim-sub">Resolve conflitos, responsabilidade relacional</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Autoaval.</span><div class="bar-track"><div class="bar-fill self" style="width:31%"></div></div><span class="bar-pct" style="color:var(--teal)">31%</span></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Avaliadores</span><div class="bar-track"><div class="bar-fill others" style="width:74%"></div></div><span class="bar-pct" style="color:var(--green)">74%</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DISCREPANCY -->
+  <div class="discrepancy-section" style="margin-top:32px">
+    <h3>🔍 Maiores Diferenças: Auto vs. Avaliadores</h3>
+    <p>Dimensões onde a percepção dos outros difere mais da sua autoavaliação — pontos de reflexão valiosos</p>
+    <div class="disc-row">
+      <span class="disc-name">Compostura</span>
+      <div class="disc-bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray);width:70px">Auto 27%</span><div class="bar-track"><div class="bar-fill self" style="width:27%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray);width:70px">Outros 79%</span><div class="bar-track"><div class="bar-fill others" style="width:79%"></div></div></div>
+      </div>
+      <span class="disc-note">Outros te veem muito mais calmo do que você sente</span>
+    </div>
+    <div class="disc-row">
+      <span class="disc-name">Pensamento Sistêmico</span>
+      <div class="disc-bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray);width:70px">Auto 60%</span><div class="bar-track"><div class="bar-fill self" style="width:60%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray);width:70px">Outros 84%</span><div class="bar-track"><div class="bar-fill others" style="width:84%"></div></div></div>
+      </div>
+      <span class="disc-note">Subestima sua própria visão sistêmica</span>
+    </div>
+    <div class="disc-row">
+      <span class="disc-name">Intelig. Interpessoal</span>
+      <div class="disc-bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray);width:70px">Auto 31%</span><div class="bar-track"><div class="bar-fill self" style="width:31%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray);width:70px">Outros 74%</span><div class="bar-track"><div class="bar-fill others" style="width:74%"></div></div></div>
+      </div>
+      <span class="disc-note">Muito mais hábil em relacionamentos do que percebe</span>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- REATIVAS -->
+<section id="reativas">
+  <div class="section-title">⚠️ Tendências Reativas — Pontos de Atenção</div>
+  <div class="section-sub">Comportamentos que podem limitar sua eficácia. Nas reativas, <strong>pontuações altas = atenção</strong>; pontuações baixas = saudável.</div>
+
+  <div class="reactive-grid">
+
+    <div class="reactive-card attention">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="r-name">Determinado</div>
+        <span class="badge-alert">⚠️ Avaliadores: 92%</span>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Auto 36%</span><div class="bar-track"><div class="bar-fill self" style="width:36%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Outros 92%</span><div class="bar-track" style="background:#fef3c7"><div class="bar-fill" style="width:92%;background:#f59e0b"></div></div></div>
+      </div>
+      <div class="r-tip">Workaholic, exige muito de si mesmo. Outros veem isso muito mais do que você percebe. Risco de esgotamento.</div>
+    </div>
+
+    <div class="reactive-card attention">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="r-name">Perfeccionismo</div>
+        <span class="badge-alert">Avaliadores: 54%</span>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Auto 33%</span><div class="bar-track"><div class="bar-fill self" style="width:33%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Outros 54%</span><div class="bar-track" style="background:#fef3c7"><div class="bar-fill" style="width:54%;background:#f59e0b"></div></div></div>
+      </div>
+      <div class="r-tip">Padrões elevados que podem sobrecarregar a equipe. Zona de reflexão (33%–67%).</div>
+    </div>
+
+    <div class="reactive-card attention">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="r-name">Pertencer</div>
+        <span class="badge-alert">Avaliadores: 62%</span>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Auto 55%</span><div class="bar-track"><div class="bar-fill self" style="width:55%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Outros 62%</span><div class="bar-track" style="background:#fef3c7"><div class="bar-fill" style="width:62%;background:#f59e0b"></div></div></div>
+      </div>
+      <div class="r-tip">Busca por aprovação e cautela em se arriscar. Zona de reflexão a observar.</div>
+    </div>
+
+    <div class="reactive-card ok">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="r-name">Arrogância</div>
+        <span class="badge-ok">✓ Avaliadores: 29%</span>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Auto 93%</span><div class="bar-track"><div class="bar-fill self" style="width:93%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Outros 29%</span><div class="bar-track"><div class="bar-fill others" style="width:29%"></div></div></div>
+      </div>
+      <div class="r-tip">Você se percebe muito mais arrogante do que outros te veem. Autocrítica excessiva neste ponto.</div>
+    </div>
+
+    <div class="reactive-card ok">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="r-name">Agradar</div>
+        <span class="badge-ok">✓ Avaliadores: 5%</span>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Auto 36%</span><div class="bar-track"><div class="bar-fill self" style="width:36%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Outros 5%</span><div class="bar-track"><div class="bar-fill others" style="width:5%"></div></div></div>
+      </div>
+      <div class="r-tip">Excelente! Não busca aprovação excessiva dos outros. Forte independência de julgamento.</div>
+    </div>
+
+    <div class="reactive-card ok">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="r-name">Passividade</div>
+        <span class="badge-ok">✓ Avaliadores: 14%</span>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Auto 41%</span><div class="bar-track"><div class="bar-fill self" style="width:41%"></div></div></div>
+        <div class="bar-row"><span class="bar-label" style="font-size:11px;color:var(--gray)">Outros 14%</span><div class="bar-track"><div class="bar-fill others" style="width:14%"></div></div></div>
+      </div>
+      <div class="r-tip">Líder ativo e engajado. Baixíssima passividade percebida pelos avaliadores.</div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- FEEDBACKS -->
+<section id="feedbacks">
+  <div class="section-title">💬 Feedbacks dos Avaliadores</div>
+  <div class="section-sub">O que as pessoas que trabalham com você dizem diretamente sobre sua liderança</div>
+
+  <div class="feedback-grid">
+    <div class="feedback-card stop">
+      <div class="fc-icon">🛑</div>
+      <div class="fc-title">Parar / Reduzir</div>
+      <div class="fc-sub">Comportamentos a diminuir ou eliminar</div>
+      <ul class="stop">
+        <li>Acumular muitas responsabilidades diretas operacionais que poderiam ser delegadas</li>
+        <li>Sair da zona de conforto evitando novos desafios de gestão de pessoas e financeiro</li>
+        <li>Assumir tarefas que a equipe poderia executar com mais autonomia</li>
+        <li>Executar imediatamente sem dar tempo ao colaborador para processar e agir</li>
+      </ul>
+    </div>
+
+    <div class="feedback-card start">
+      <div class="fc-icon">🚀</div>
+      <div class="fc-title">Começar / Intensificar</div>
+      <div class="fc-sub">Novos comportamentos a desenvolver</div>
+      <ul class="start">
+        <li>Participar de grupos de empresários e negócios para trocar experiências e identificar gaps</li>
+        <li>Criar rotina de comunicação com liderados para confirmar informações com mais agilidade</li>
+        <li>Delegar mais atividades para ampliar a confiança e o desenvolvimento da equipe</li>
+        <li>Investir em inglês para expandir alcance e desenvolver pessoas além da atuação regional</li>
+        <li>Dar mais espaço ao colaborador para executar no seu ritmo, sem antecipar a ação</li>
+      </ul>
+    </div>
+
+    <div class="feedback-card continue">
+      <div class="fc-icon">✅</div>
+      <div class="fc-title">Continuar / Fortalecer</div>
+      <div class="fc-sub">Pontos fortes a manter e aprofundar</div>
+      <ul class="continue">
+        <li>Diálogo aberto com o time com feedbacks frequentes e honestos sobre o trabalho</li>
+        <li>Compartilhar conhecimento de mercado e domínio técnico com os colaboradores</li>
+        <li>Atenção genuína às pessoas e ao bem-estar da equipe</li>
+        <li>Decisões cautelosas e bem fundamentadas — "pé no chão"</li>
+        <li>Confiar nos liderados, o que os impulsiona a entregar melhor</li>
+        <li>Liderança e acompanhamento no desenvolvimento dos desenvolvedores</li>
+        <li>Ser acolhedor e manter o profundo conhecimento técnico</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- MARCA DE LIDERANÇA -->
+<section id="marca">
+  <div class="section-title">🏅 Marca de Liderança</div>
+  <div class="section-sub">As 10 principais dimensões como seus avaliadores te experimentam — sua identidade como líder</div>
+
+  <div class="brand-section">
+    <h3>Como seus avaliadores definem você</h3>
+    <p>Top 10 dimensões por percentil dos avaliadores — sua "marca" de liderança percebida</p>
+    <div class="brand-list">
+      <div class="brand-item">
+        <div class="brand-rank">1</div>
+        <div class="brand-name">Determinado</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:92%"></div></div>
+        <div class="brand-pct">92%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">2</div>
+        <div class="brand-name">Capacidade de Decisão</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:89%"></div></div>
+        <div class="brand-pct">89%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">3</div>
+        <div class="brand-name">Orientação e Desenvolvimento</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:85%"></div></div>
+        <div class="brand-pct">85%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">4</div>
+        <div class="brand-name">Pensamento Sistêmico</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:84%"></div></div>
+        <div class="brand-pct">84%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">5</div>
+        <div class="brand-name">Compostura</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:79%"></div></div>
+        <div class="brand-pct">79%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">6</div>
+        <div class="brand-name">Autenticidade Corajosa</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:77%"></div></div>
+        <div class="brand-pct">77%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">6</div>
+        <div class="brand-name">Foco Estratégico</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:77%"></div></div>
+        <div class="brand-pct">77%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">8</div>
+        <div class="brand-name">Inteligência Interpessoal</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:74%"></div></div>
+        <div class="brand-pct">74%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">8</div>
+        <div class="brand-name">Líder Altruísta</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:74%"></div></div>
+        <div class="brand-pct">74%</div>
+      </div>
+      <div class="brand-item">
+        <div class="brand-rank">10</div>
+        <div class="brand-name">Integridade</div>
+        <div class="brand-bar-track"><div class="brand-bar-fill" style="width:72%"></div></div>
+        <div class="brand-pct">72%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- PLANO DE DESENVOLVIMENTO -->
+<section id="plano">
+  <div class="section-title">📋 Plano de Desenvolvimento da Liderança</div>
+  <div class="section-sub">Framework do Leadership Circle para transformar insights do LCP em ação concreta</div>
+
+  <div class="plan-steps">
+    <div class="plan-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>A História da Minha Liderança</h4>
+        <p>Reflita sobre os principais insights do seu LCP e de feedbacks formais e informais. Escreva os aprendizados que guiarão seu desenvolvimento. Baseie-se na diferença entre como você se percebe e como os outros te veem.</p>
+      </div>
+    </div>
+    <div class="plan-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Minha Visão de Liderança</h4>
+        <p>Defina uma visão de longo prazo — Pessoal, Específica, Estratégica, Grandiosa e Coletiva. Pergunte-se:</p>
+        <ul>
+          <li>O que faria se soubesse que não poderia falhar?</li>
+          <li>O que as pessoas mais querem que aconteça no sistema em que me encontro?</li>
+          <li>Onde estarei em 5 anos e o que terei conquistado?</li>
+        </ul>
+      </div>
+    </div>
+    <div class="plan-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Principal Objetivo de Liderança (3–9 meses)</h4>
+        <p>Defina um objetivo concreto no formato: <em>"Como líder, eu [característica desejada]..."</em> — algo que, se realizado, revelaria seus talentos a um novo nível e criaria impacto positivo nos outros. Exemplo: <em>"Como líder, eu delego com confiança e desenvolvo autonomia na equipe."</em></p>
+      </div>
+    </div>
+    <div class="plan-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Identificar o "Ponto Fraco"</h4>
+        <p>Qual padrão de comportamento, se eliminado, elevaria seus talentos ao próximo nível? Com base nos dados:</p>
+        <ul>
+          <li>Tendência de acumular responsabilidades operacionais (não delegar)</li>
+          <li>Ritmo acelerado que pode não dar espaço suficiente à equipe</li>
+          <li>Autocrítica excessiva (veja o gap na Arrogância e na Compostura)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="plan-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Comportamentos Específicos</h4>
+        <p>Defina o que vai <strong>começar a praticar</strong> e o que vai <strong>parar de praticar</strong>:</p>
+        <ul>
+          <li>✅ Começar: Criar rotina semanal de comunicação com liderados; delegar uma tarefa nova por semana</li>
+          <li>✅ Começar: Participar mensalmente de grupos de empresários</li>
+          <li>🛑 Parar: Assumir tarefas que a equipe poderia executar</li>
+          <li>🛑 Parar: Antecipar a execução sem dar tempo ao colaborador</li>
+        </ul>
+      </div>
+    </div>
+    <div class="plan-step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <h4>Círculo de Responsabilidade</h4>
+        <p>Identifique 5–8 pessoas de confiança para fornecer feedback contínuo sobre seu progresso. Compartilhe o plano com elas e solicite retorno frequente. Revise o plano <strong>pelo menos uma vez por mês</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>Maicon Martins — Leadership Circle Profile™ 2026</strong><br>
+  Gerado a partir dos documentos: LCP Report 2026 · Plano de Desenvolvimento da Liderança
+</footer>
+
+<script>
+  // Scroll progress
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    document.getElementById('progressBar').style.width = (scrollTop / docHeight * 100) + '%';
+  });
+
+  // Active nav link
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('nav a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // Animate bars on scroll
+  const bars = document.querySelectorAll('.bar-fill, .brand-bar-fill');
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.width = entry.target.style.width; // trigger repaint
+      }
+    });
+  }, { threshold: 0.1 });
+  bars.forEach(b => barObserver.observe(b));
+</script>
+</body>
+</html>
